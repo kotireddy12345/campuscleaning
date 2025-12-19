@@ -4,7 +4,7 @@ require 'config.php';
 $data = getJsonInput();
 
 $task_id = $data['task_id'] ?? null;
-$status  = $data['status']  ?? null; // pending / in_progress / completed
+$status  = $data['status']  ?? null; // pending / in_progress / completeddffddfdffd
 
 if ($task_id === null || $status === null) {
     jsonResponse(false, 'task_id and status are required', null, 400);
