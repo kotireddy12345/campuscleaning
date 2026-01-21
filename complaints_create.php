@@ -1,41 +1,51 @@
-<?php
-require 'config.php';
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
-$data = getJsonInput();
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
-$title       = trim($data['title'] ?? '');
-$description = trim($data['description'] ?? '');
-$building_id = $data['building_id'] ?? null;
-$room_id     = $data['room_id'] ?? null;
-$category    = $data['category'] ?? null;
-$priority    = $data['priority'] ?? 'medium';
-$reported_by = $data['reported_by'] ?? null; // user id (student/staff)
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create New Complaint"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_gravity="center"
+            android:paddingBottom="16dp" />
 
-if ($title === '' || $reported_by === null) {
-    jsonResponse(false, 'title and reported_by are required', null, 400);
-}
+        <EditText
+            android:id="@+id/etTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Title" />
 
-$stmt = $mysqli->prepare(
-    "INSERT INTO complaints
-     (title, description, building_id, room_id, category, priority, reported_by)
-     VALUES (?,?,?,?,?,?,?)"
-);
+        <EditText
+            android:id="@+id/etDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Description"
+            android:minLines="3"
+            android:gravity="top"
+            android:layout_marginTop="12dp" />
 
-$stmt->bind_param(
-    'ssiissi',
-    $title,
-    $description,
-    $building_id,
-    $room_id,
-    $category,
-    $priority,
-    $reported_by
-);
+        <EditText
+            android:id="@+id/etLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Location"
+            android:layout_marginTop="12dp" />
 
-if ($stmt->execute()) {
-    jsonResponse(true, 'Complaint created successfully', [
-        'complaint_id' => $stmt->insert_id
-    ], 201);
-} else {
-    jsonResponse(false, 'Failed to create complaint', null, 500);
-}
+        <Button
+            android:id="@+id/btnSubmitComplaint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Submit Complaint"
+            android:layout_marginTop="20dp" />
+
+    </LinearLayout>
+</ScrollView>

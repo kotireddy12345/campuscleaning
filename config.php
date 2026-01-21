@@ -1,53 +1,38 @@
 <?php
-// config.php - database connection and helper functions
+// Set headers for JSON response and enable error reporting for debugging
+header("Content-Type: application/json");
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-header('Content-Type: application/json; charset=utf-8');
-header('Access-Control-Allow-Origin: *'); // for testing / Postman
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+// --- DATABASE CONFIGURATION ---
+$DB_HOST = "localhost";
+$DB_USER = "root";
+$DB_PASS = "";
+$DB_NAME = "campusclean";
 
-// Handle preflight (OPTIONS) request quickly
-if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-    http_response_code(200);
-    exit;
+// Create MySQLi connection
+$mysqli = new mysqli($DB_HOST, $DB_USER, $DB_PASS, $DB_NAME);
+
+// Check connection
+if ($mysqli->connect_error) {
+    // Use a helper function for consistent JSON responses
+    jsonResponse(false, "Database connection failed: " . $mysqli->connect_error, null, 500);
 }
 
-$host = 'localhost';
-$db   = 'campusclean';
-$user = 'root';      // default in XAMPP
-$pass = '';          // default empty, unless you changed it
-
-$mysqli = new mysqli($host, $user, $pass, $db);
-
-if ($mysqli->connect_errno) {
-    http_response_code(500);
-    echo json_encode([
-        'success' => false,
-        'message' => 'Database connection failed: ' . $mysqli->connect_error
-    ]);
-    exit;
-}
-
-// Helper: read JSON body
+// Helper function to get JSON input from the app
 function getJsonInput() {
-    $raw = file_get_contents('php://input');
-    $data = json_decode($raw, true);
-    if ($data === null) {
-        return [];
-    }
-    return $data;
+    return json_decode(file_get_contents("php://input"), true);
 }
 
-// Helper: send JSON response
+// Helper function to send a standard JSON response and exit
 function jsonResponse($success, $message, $data = null, $statusCode = 200) {
     http_response_code($statusCode);
-    $response = [
-        'success' => $success,
-        'message' => $message
-    ];
+    $response = ["success" => $success, "message" => $message];
     if ($data !== null) {
         $response['data'] = $data;
     }
     echo json_encode($response);
     exit;
 }
+?>
